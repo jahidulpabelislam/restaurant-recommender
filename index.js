@@ -1,12 +1,14 @@
 var express = require("express"),
     app = express(),
     http = require("http"),
-    server = http.Server(app);
+    server = http.Server(app),
+    request = require('request'),
+    Yelp = require('yelp'),
+    bodyParser = require('body-parser');
 
 server.listen(9000);
 
 app.use(express.static(__dirname + "/js"));
-var bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 
@@ -15,8 +17,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.get("/", function (req, res) {
     res.sendFile(__dirname + "/index.html");
 });
-
-var Yelp = require('yelp');
 
 var yelp = new Yelp({
     consumer_key: 'NYLIYvAuI7kb917AbxGG7g',
@@ -27,66 +27,55 @@ var yelp = new Yelp({
 
 app.post('/recommendations/', function (req, res) {
 
-    console.log(req.body);
+    yelp.search({term: 'food', location: 'po21 5jj', sort: 2, radius_filter: 20000, category_filter: "italian,french"})
+        .then(function (data) {
 
-    /*yelp.search({term: 'food', location: 'Portsmouth'})
-     .then(function (data) {
-     res.send(JSON.stringify(response));
-     })
-     .catch(function (err) {
-     res.send(JSON.stringify(response));
-     });
+            var restaurantsRecommended = [];
 
-    var request = require('request');
+            var restaurants = data.businesses;
 
-    request('https://maps.googleapis.com/maps/api/geocode/json?address=po11aq&key=AIzaSyDTY9OxJDd4_N2nVaNtdJng-YZcFYgmpEE', function (error, response, body) {
-        console.log('Status Code: ' + response.statusCode);
-
-        if (error || response.statusCode != 200) {
-            console.log("Non 200 Response");
-        }
-
-        if (!error && response.statusCode == 200) {
-            var locationResult = JSON.parse(body);
-            var lat = locationResult.results[0].geometry.location.lat,
-                lng = locationResult.results[0].geometry.location.lng;
-
-            request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + lng + "&radius=5000&type=restaurant&key=AIzaSyAk--L5B1sdS9Q5TKi23t7a4jmqN30Z7bg", function (error, response, body) {
-                console.log('Status Code: ' + response.statusCode);
-
-                if (error || response.statusCode != 200) {
-                    console.log("Non 200 Response");
-                }
-
-                if (!error && response.statusCode == 200) {
-                    var placesResult = JSON.parse(body),
-                        restaurants = [];
-
-                    placesResult.results.forEach(function (restaurant) {
-
-                        request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyAk--L5B1sdS9Q5TKi23t7a4jmqN30Z7bg&placeid=" + restaurant.place_id, function (error, response, body) {
-
-                            console.log('Status Code: ' + response.statusCode);
-
-                            if (error || response.statusCode != 200) {
-                                console.log("Non 200 Response");
-                            }
-
-                            if (!error && response.statusCode == 200) {
-                                restaurants.push(JSON.parse(body));
-                                console.log("getting request");
-                            }
-
-                            if (restaurants.length === 5) {
-                                console.log("done");
-                                res.send(restaurants);
-                            }
-
-                        });
-                    });
-                }
+            restaurants.sort(function (a, b) {
+                return a.rating - b.rating;
             });
 
-        }
-    });*/
+            restaurants.forEach(function (restaurant) {
+
+                var lat = restaurant.location.coordinate.latitude;
+                var long = restaurant.location.coordinate.longitude;
+                var name = restaurant.name;
+
+                request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long + "&keyword=" + name + "&radius=10&type=restaurant&key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk", function (error, response, body) {
+
+                    if (error || response.statusCode != 200) {
+                        res.send(JSON.stringify(error));
+                    }
+
+                    if (!error && response.statusCode == 200) {
+                        var placesResult = JSON.parse(body);
+
+                        placesResult.results.forEach(function (restaurant) {
+
+                            request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk&placeid=" + restaurant.place_id, function (error, response, body) {
+
+                                if (error || response.statusCode != 200) {
+                                    res.send(JSON.stringify(error));
+                                }
+
+                                if (!error && response.statusCode == 200) {
+                                    restaurantsRecommended.push(JSON.parse(body).result);
+                                }
+
+                                if (restaurantsRecommended.length === 5) {
+                                    res.send(restaurantsRecommended);
+                                }
+
+                            });
+                        });
+                    }
+                });
+            });
+        })
+        .catch(function (err) {
+            res.send(JSON.stringify(err));
+        });
 });
