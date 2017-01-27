@@ -41,12 +41,26 @@ app.get("/recommendations/", function (req, res) {
     request('https://maps.googleapis.com/maps/api/geocode/json?address=po11aq&key=AIzaSyDTY9OxJDd4_N2nVaNtdJng-YZcFYgmpEE', function (error, response, body) {
         console.log('Status Code: ' + response.statusCode);
 
-        if (response.statusCode != 200) {
+        if (error || response.statusCode != 200) {
             console.log("Non 200 Response");
         }
 
         if (!error && response.statusCode == 200) {
-            res.send(JSON.parse(body));
+            var locationResult = JSON.parse(body);
+            var lat =  locationResult.results[0].geometry.location.lat,
+                lng = locationResult.results[0].geometry.location.lng;
+
+            request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + lng + "&radius=5000&type=restaurant&key=AIzaSyAk--L5B1sdS9Q5TKi23t7a4jmqN30Z7bg", function (error, response, body) {
+                console.log('Status Code: ' + response.statusCode);
+
+                if (error || response.statusCode != 200) {
+                    console.log("Non 200 Response");
+                }
+
+                if (!error && response.statusCode == 200) {
+                    res.send(JSON.parse(body));
+                }
+            });
 
         }
     });
