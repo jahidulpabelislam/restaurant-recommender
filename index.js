@@ -27,6 +27,8 @@ var yelp = new Yelp({
 
 app.post('/recommendations/', function (req, res) {
 
+    var responseData = {};
+
     yelp.search({term: 'food', location: 'po21 5jj', sort: 2, radius_filter: 20000, category_filter: "italian,french"})
         .then(function (data) {
 
@@ -46,10 +48,6 @@ app.post('/recommendations/', function (req, res) {
 
                 request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long + "&keyword=" + name + "&radius=10&type=restaurant&key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk", function (error, response, body) {
 
-                    if (error || response.statusCode != 200) {
-                        res.send(JSON.stringify(error));
-                    }
-
                     if (!error && response.statusCode == 200) {
                         var placesResult = JSON.parse(body);
 
@@ -57,16 +55,13 @@ app.post('/recommendations/', function (req, res) {
 
                             request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk&placeid=" + restaurant.place_id, function (error, response, body) {
 
-                                if (error || response.statusCode != 200) {
-                                    res.send(JSON.stringify(error));
-                                }
-
                                 if (!error && response.statusCode == 200) {
                                     restaurantsRecommended.push(JSON.parse(body).result);
                                 }
 
                                 if (restaurantsRecommended.length === 5) {
-                                    res.send(restaurantsRecommended);
+                                    responseData.data = restaurantsRecommended;
+                                    res.send(responseData);
                                 }
 
                             });
@@ -76,6 +71,7 @@ app.post('/recommendations/', function (req, res) {
             });
         })
         .catch(function (err) {
-            res.send(JSON.stringify(err));
+            responseData.error = "Error";
+            res.send(responseData);
         });
 });
