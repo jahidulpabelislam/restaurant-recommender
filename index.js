@@ -1,8 +1,9 @@
 var express = require("express"),
     app = express(),
-    http = require("http").Server(app);
+    http = require("http"),
+    server = http.Server(app);
 
-http.listen(9000);
+server.listen(9000);
 
 app.use(express.static(__dirname + "/public"));
 
@@ -25,13 +26,28 @@ var yelp = new Yelp({
     token_secret: '4cr6oFU8197yUKEtovdrcMhEJwM'
 });
 
-
 app.get("/recommendations/", function (req, res) {
-        yelp.search({ term: 'food', location: 'Portsmouth' })
-            .then(function (data) {
-                res.send(JSON.stringify(response));
-            })
-            .catch(function (err) {
-                res.send(JSON.stringify(response));
-            });
+
+    /*yelp.search({term: 'food', location: 'Portsmouth'})
+     .then(function (data) {
+     res.send(JSON.stringify(response));
+     })
+     .catch(function (err) {
+     res.send(JSON.stringify(response));
+     });*/
+
+    var request = require('request');
+
+    request('https://maps.googleapis.com/maps/api/geocode/json?address=po11aq&key=AIzaSyDTY9OxJDd4_N2nVaNtdJng-YZcFYgmpEE', function (error, response, body) {
+        console.log('Status Code: ' + response.statusCode);
+
+        if (response.statusCode != 200) {
+            console.log("Non 200 Response");
+        }
+
+        if (!error && response.statusCode == 200) {
+            res.send(JSON.parse(body));
+
+        }
+    });
 });
