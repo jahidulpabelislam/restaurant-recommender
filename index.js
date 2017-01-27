@@ -58,7 +58,31 @@ app.get("/recommendations/", function (req, res) {
                 }
 
                 if (!error && response.statusCode == 200) {
-                    res.send(JSON.parse(body));
+                    var placesResult = JSON.parse(body),
+                        restaurants = [];
+
+                    placesResult.results.forEach(function(restaurant) {
+
+                        request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyAk--L5B1sdS9Q5TKi23t7a4jmqN30Z7bg&placeid=" + restaurant.place_id, function (error, response, body) {
+
+                            console.log('Status Code: ' + response.statusCode);
+
+                            if (error || response.statusCode != 200) {
+                                console.log("Non 200 Response");
+                            }
+
+                            if (!error && response.statusCode == 200) {
+                                restaurants.push(JSON.parse(body));
+                                console.log("getting request");
+                            }
+
+                            if (restaurants.length === 5) {
+                                console.log("done");
+                                res.send(restaurants);
+                            }
+
+                        });
+                    });
                 }
             });
 
