@@ -29,7 +29,7 @@ app.post('/recommendations/', function (req, res) {
 
     var responseData = {};
 
-    yelp.search({term: 'food', location: 'po21 5jj', sort: 2, radius_filter: 20000, category_filter: "italian,french"})
+    yelp.search({term: 'food', location: req.body.postcode, sort: 2, radius_filter: req.body.distance, category_filter: req.body.food.join()})
         .then(function (data) {
 
             var restaurantsRecommended = [];
@@ -60,10 +60,10 @@ app.post('/recommendations/', function (req, res) {
                                 count++;
 
                                 if (!error && response.statusCode == 200) {
-                                    var day = 6;
-                                    var time = 1700;
-                                    var data = JSON.parse(body2).result;
-                                    var openingHours = data.opening_hours;
+                                    var day = 6,
+                                        time = 1700,
+                                        data = JSON.parse(body2).result,
+                                        openingHours = data.opening_hours;
 
                                     if (openingHours && openingHours.periods[day] && parseInt(openingHours.periods[day].open.time) <= time && parseInt(openingHours.periods[day].close.time) >= time) {
                                         restaurantsRecommended.push(data);
@@ -81,8 +81,8 @@ app.post('/recommendations/', function (req, res) {
                 });
             });
         })
-        .catch(function () {
-            responseData.error = "Error";
+        .catch(function (err) {
+            responseData.error = err;
             res.send(responseData);
         });
 });
