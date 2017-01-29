@@ -16,8 +16,10 @@ document.getElementById('preferences').onsubmit = function () {
     var pCode = document.getElementById('pCode').value;
     var dist = document.getElementById('distance').value;
     var service = document.getElementById('service').value;
+    var time = document.getElementById('time').value;
+    var day = document.getElementById('day').value;
 
-    var preferences = {"postcode": pCode, "food": chosenType, "distance": dist, "service": service};
+    var preferences = {"postcode": pCode, "food": chosenType, "distance": dist, "service": service, "time": time, "day": day};
     var preferencesJSON = JSON.stringify(preferences);
 
     var http = new XMLHttpRequest();

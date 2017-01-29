@@ -13,20 +13,28 @@
 
             <input type="text" class="form-control" name="fname" id="pCode" placeholder="Post Code">
             <label class="checkbox-inline">Food Type:</label>
+            <label class="checkbox-inline"><input type="checkbox" name="myCheck" value="italian">Italian</label>
+            <label class="checkbox-inline"><input type="checkbox" name="myCheck" value="french">French</label>
             <label class="checkbox-inline"><input type="checkbox" name="myCheck" value="indian">Indian</label>
             <label class="checkbox-inline"><input type="checkbox" name="myCheck" value="mexican">Mexican</label>
             <label class="checkbox-inline"><input type="checkbox" name="myCheck" value="chinese">Chinese</label>
 
-            <select class="form-control input-lg">
-                <option value="a">12:00</option>
-                <option value="b">12:30</option>
-                <option value="c">13:00</option>
+            <select id="day" class="form-control input-lg">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+            </select>
+
+            <select id="time" class="form-control input-lg">
+                <option value="1200">12:00</option>
+                <option value="1230">12:30</option>
+                <option value="1300">13:00</option>
             </select>
 
             <select id="distance" class="form-control input-lg">
                 <option value="1">1KM</option>
                 <option value="2">2KM</option>
-                <option value="3">3KM</option>
+                <option value="5">5KM</option>
             </select>
 
             <select id="service" class="form-control input-lg">
@@ -38,7 +46,7 @@
         </form>
     </div>
 
-    <div id="recommendation"></div>
+    <div id="recommendation" class="row"></div>
 
 </div>
 <script src="recommend.js" type="text/javascript"></script>
