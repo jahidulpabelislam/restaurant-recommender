@@ -44,7 +44,6 @@ app.post('/recommendations/', function (req, res) {
             });
 
             var count = 0;
-            res.send(restaurants);
 
             restaurants.forEach(function (restaurant) {
 
@@ -52,14 +51,17 @@ app.post('/recommendations/', function (req, res) {
                 var long = restaurant.location.coordinate.longitude;
                 var name = restaurant.name;
 
-                request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long + "&keyword=" + name + "&radius=10&type=restaurant&key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk", function (error, response, body) {
+                request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long + "&keyword=" + name + "&radius=100&type=restaurant&key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk", function (error, response, body) {
 
                     count++;
 
                     if (!error && response.statusCode === 200) {
-                        var placesResult = JSON.parse(body);
+                        var placesResult = JSON.parse(body),
+                            newCount = 0;
 
                         placesResult.results.forEach(function (restaurant) {
+
+                            newCount++;
 
                             request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk&placeid=" + restaurant.place_id, function (error, response, body2) {
 
@@ -72,7 +74,7 @@ app.post('/recommendations/', function (req, res) {
                                     }
                                 }
 
-                                if (restaurantsRecommended.length === 5 || count >= restaurants.length) {
+                                if ((restaurantsRecommended.length === 5 || count === restaurants.length) && newCount === placesResult.results.length) {
                                     responseData.restaurantsRecommended = restaurantsRecommended;
                                     res.send(responseData);
                                 }

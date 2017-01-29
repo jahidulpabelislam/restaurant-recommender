@@ -35,6 +35,8 @@ document.getElementById('preferences').onsubmit = function () {
             const data = JSON.parse(http.responseText),
                 recommendation = document.getElementById("recommendation");
 
+            recommendation.innerHTML = "";
+
             if (data && data.restaurantsRecommended && data.restaurantsRecommended.length > 0) {
                 console.log(data.restaurantsRecommended);
                 data.restaurantsRecommended.forEach(function (restaurant) {
