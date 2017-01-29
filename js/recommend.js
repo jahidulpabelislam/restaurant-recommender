@@ -29,8 +29,38 @@ document.getElementById('preferences').onsubmit = function () {
 
     //Call a function when the state changes.
     http.onreadystatechange = function () {
-        if (http.readyState == 4 && http.status == 200) {
-            alert(http.responseText);
+        if (http.readyState === 4 && http.status === 200) {
+            const data = JSON.parse(http.responseText),
+                recommendation = document.getElementById("recommendation");
+
+            if (data && data.restaurantsRecommended && data.restaurantsRecommended.length > 0) {
+                console.log(data.restaurantsRecommended);
+                data.restaurantsRecommended.forEach(function (restaurant) {
+                    var div = document.createElement("div");
+                    var name = document.createElement("p");
+                    var address = document.createElement("p");
+                    var number = document.createElement("p");
+                    var site = document.createElement("a");
+
+                    div.className = "col-md-4";
+                    name.innerHTML = restaurant.name;
+                    address.innerHTML = restaurant.formatted_address;
+                    name.innerHTML = restaurant.name;
+                    number.innerHTML = restaurant.formatted_phone_number;
+                    site.innerHTML = restaurant.website;
+
+                    div.appendChild(name);
+                    div.appendChild(address);
+                    div.appendChild(number);
+                    div.appendChild(site);
+
+                    recommendation.appendChild(div);
+                });
+            } else if (data && data.error) {
+                recommendation.innerHTML = "<p>Error getting your Recommendations, please try again later.</p>";
+            } else {
+                recommendation.innerHTML = "<p>No Recommendations found for your preferences.</p>";
+            }
         }
     };
 
