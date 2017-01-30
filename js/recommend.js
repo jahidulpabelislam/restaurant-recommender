@@ -52,6 +52,7 @@ document.getElementById('preferences').onsubmit = function () {
                     name.innerHTML = restaurant.name;
                     number.innerHTML = restaurant.formatted_phone_number;
                     site.innerHTML = restaurant.website;
+                    site.href = restaurant.website;
 
                     div.appendChild(name);
                     div.appendChild(address);

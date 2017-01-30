@@ -6,8 +6,8 @@ const express = require("express"),
     yelp = new Yelp({
         consumer_key: "NYLIYvAuI7kb917AbxGG7g",
         consumer_secret: "Fvm2IdcYp3S0pD19Vducgu9Pabs",
-        token: "Qqwq-Dr1yaEywOfQD7HjRvM02JlV4o64",
-        token_secret: "hZnaVn2TFa1VJs-Xu37r-G1gDOo"
+        token: "P_Df1D20uc7AIHbb-mbKSVwNaKOUIvAd",
+        token_secret: "Km6I_BsvztNr91_7nEagn2KMQSI"
     });
 
 require("http").Server(app).listen(9000);
@@ -32,8 +32,7 @@ app.post('/recommendations/', function (req, res) {
     const day = days[req.body.day],
         time = parseInt(req.body.time);
 
-    yelp.search({term: "food", location: req.body.postcode, sort: 2, radius_filter: parseInt(req.body.distance) * 1000, category_filter: "french,italian" })
-        .then(function (data) {
+    yelp.search({term: "food", location: req.body.postcode, sort: 2, radius_filter: parseInt(req.body.distance) * 1000, category_filter: req.body.food.join() }).then(function (data) {
 
             var restaurantsRecommended = [];
 
@@ -43,7 +42,7 @@ app.post('/recommendations/', function (req, res) {
                 return b.rating - a.rating;
             });
 
-            var count = 0;
+            var count = 0, sent = false;
 
             restaurants.forEach(function (restaurant) {
 
@@ -51,7 +50,7 @@ app.post('/recommendations/', function (req, res) {
                 var long = restaurant.location.coordinate.longitude;
                 var name = restaurant.name;
 
-                request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long + "&keyword=" + name + "&radius=100&type=restaurant&key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk", function (error, response, body) {
+                request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long + "&keyword=" + name + "&radius=100&type=restaurant&key=AIzaSyDTY9OxJDd4_N2nVaNtdJng-YZcFYgmpEE", function (error, response, body) {
 
                     count++;
 
@@ -63,18 +62,19 @@ app.post('/recommendations/', function (req, res) {
 
                             newCount++;
 
-                            request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk&placeid=" + restaurant.place_id, function (error, response, body2) {
+                            request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyDTY9OxJDd4_N2nVaNtdJng-YZcFYgmpEE&placeid=" + restaurant.place_id, function (error, response, body2) {
 
                                 if (!error && response.statusCode === 200) {
-                                    var data = JSON.parse(body2).result,
-                                        openingHours = JSON.parse(body2).result.opening_hours;
+                                    var data2 = JSON.parse(body2).result,
+                                        openingHours = data2.opening_hours;
 
                                     if (openingHours && openingHours.periods[day] && parseInt(openingHours.periods[day].open.time) <= time && parseInt(openingHours.periods[day].close.time) >= time) {
-                                        restaurantsRecommended.push(data);
+                                        restaurantsRecommended.push(data2);
                                     }
                                 }
 
-                                if ((restaurantsRecommended.length === 5 || count === restaurants.length) && newCount === placesResult.results.length) {
+                                if ((restaurantsRecommended.length === 5 || count === restaurants.length) && !sent) {
+                                    sent = true;
                                     responseData.restaurantsRecommended = restaurantsRecommended;
                                     res.send(responseData);
                                 }
