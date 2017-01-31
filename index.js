@@ -50,30 +50,32 @@ app.post('/recommendations/', function (req, res) {
                 var long = restaurant.location.coordinate.longitude;
                 var name = restaurant.name;
 
-                request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long + "&keyword=" + name + "&radius=100&type=restaurant&key=AIzaSyDTY9OxJDd4_N2nVaNtdJng-YZcFYgmpEE", function (error, response, body) {
+                request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long + "&keyword=" + name + "&radius=100&type=restaurant&key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk", function (error, response, body) {
 
                     count++;
 
                     if (!error && response.statusCode === 200) {
                         var placesResult = JSON.parse(body),
-                            newCount = 0;
+                            newCount = 0, found = false;
 
                         placesResult.results.forEach(function (restaurant) {
 
                             newCount++;
 
-                            request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyDTY9OxJDd4_N2nVaNtdJng-YZcFYgmpEE&placeid=" + restaurant.place_id, function (error, response, body2) {
+                            request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk&placeid=" + restaurant.place_id, function (error, response, body2) {
 
                                 if (!error && response.statusCode === 200) {
+
                                     var data2 = JSON.parse(body2).result,
                                         openingHours = data2.opening_hours;
 
-                                    if (openingHours && openingHours.periods[day] && parseInt(openingHours.periods[day].open.time) <= time && parseInt(openingHours.periods[day].close.time) >= time) {
+                                    if (openingHours && openingHours.periods[day] && parseInt(openingHours.periods[day].open.time) <= time && parseInt(openingHours.periods[day].close.time) >= time && !found) {
+                                        found = true;
                                         restaurantsRecommended.push(data2);
                                     }
                                 }
 
-                                if ((restaurantsRecommended.length === 5 || count === restaurants.length) && !sent) {
+                                if (restaurantsRecommended.length === 5 && !sent) {
                                     sent = true;
                                     responseData.restaurantsRecommended = restaurantsRecommended;
                                     res.send(responseData);
