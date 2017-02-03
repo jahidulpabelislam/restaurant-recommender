@@ -89,7 +89,14 @@ app.post('/recommendations/', function (req, res) {
 
                                     if (openingHours && openingHours.periods[day] && parseInt(openingHours.periods[day].open.time) <= time && parseInt(openingHours.periods[day].close.time) >= time && !found) {
                                         found = true;
-                                        restaurantsRecommended.push(placeResult);
+                                        restaurantsRecommended.push({
+                                            name: placeResult.name,
+                                            address: placeResult.formatted_address,
+                                            phone: placeResult.formatted_phone_number,
+                                            rating: restaurant.rating,
+                                            categories: restaurant.categories,
+                                            website: placeResult.website
+                                        });
                                     }
                                 }
 

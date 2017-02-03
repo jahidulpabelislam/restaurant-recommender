@@ -41,21 +41,26 @@ document.getElementById('preferences').onsubmit = function () {
                 data.restaurantsRecommended.forEach(function (restaurant) {
                     var div = document.createElement("div");
                     var name = document.createElement("p");
+                    var category = document.createElement("p");
+                    var rating = document.createElement("p");
                     var address = document.createElement("p");
                     var number = document.createElement("p");
                     var site = document.createElement("a");
 
                     div.className = "col-md-4";
-                    name.innerHTML = restaurant.name;
-                    address.innerHTML = restaurant.formatted_address;
-                    name.innerHTML = restaurant.name;
-                    number.innerHTML = restaurant.formatted_phone_number;
+                    name.innerHTML = "Name: " + restaurant.name;
+                    address.innerHTML = "Address: " + restaurant.address;
+                    number.innerHTML = "Phone Number: " + restaurant.phone;
+                    rating.innerHTML = "Rating: " + restaurant.rating;
+                    category.innerHTML = "Categories: " + restaurant.categories;
                     site.innerHTML = restaurant.website;
                     site.href = restaurant.website;
 
                     div.appendChild(name);
                     div.appendChild(address);
                     div.appendChild(number);
+                    div.appendChild(rating);
+                    div.appendChild(category);
                     div.appendChild(site);
 
                     recommendation.appendChild(div);
