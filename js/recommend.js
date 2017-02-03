@@ -37,7 +37,6 @@ document.getElementById('preferences').onsubmit = function () {
             recommendation.innerHTML = "";
 
             if (data && data.restaurantsRecommended && data.restaurantsRecommended.length > 0) {
-                console.log(data.restaurantsRecommended);
                 data.restaurantsRecommended.forEach(function (restaurant) {
                     var div = document.createElement("div");
                     var name = document.createElement("p");
@@ -52,7 +51,11 @@ document.getElementById('preferences').onsubmit = function () {
                     address.innerHTML = "Address: " + restaurant.address;
                     number.innerHTML = "Phone Number: " + restaurant.phone;
                     rating.innerHTML = "Rating: " + restaurant.rating;
-                    category.innerHTML = "Categories: " + restaurant.categories;
+                    var cats = [];
+                    restaurant.categories.forEach(function(cat) {
+                        cats+= cat[0];
+                    });
+                    category.innerHTML = "Categories: " + cats;
                     site.innerHTML = restaurant.website;
                     site.href = restaurant.website;
 

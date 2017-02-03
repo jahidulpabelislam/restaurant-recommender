@@ -6,8 +6,8 @@ const express = require("express"),
     yelp = new Yelp({
         consumer_key: "NYLIYvAuI7kb917AbxGG7g",
         consumer_secret: "Fvm2IdcYp3S0pD19Vducgu9Pabs",
-        token: "P_Df1D20uc7AIHbb-mbKSVwNaKOUIvAd",
-        token_secret: "Km6I_BsvztNr91_7nEagn2KMQSI"
+        token: "PpEfquG1t7T8OzuNkS3Bt46jQGkxt5yh",
+        token_secret: "DIWO2SozLgCfb2vdBIaiuvTF23I"
     });
 
 require("http").Server(app).listen(9000);
