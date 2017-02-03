@@ -32,46 +32,51 @@ app.post('/recommendations/', function (req, res) {
     const day = days[req.body.day],
         time = parseInt(req.body.time);
 
-    yelp.search({term: "food", location: req.body.postcode, sort: 2, radius_filter: parseInt(req.body.distance) * 1000, category_filter: req.body.food.join() }).then(function (data) {
+    yelp.search({term: "restaurants", location: req.body.postcode, sort: 2, radius_filter: parseInt(req.body.distance) * 1000, category_filter: req.body.food.join()}).then(function(data) {
 
-            var restaurantsRecommended = [];
+        var restaurantsRecommended = [];
 
-            var restaurants = data.businesses;
+        var restaurants = data.businesses;
 
-            restaurants.sort(function (a, b) {
-                return b.rating - a.rating;
-            });
+        restaurants.sort(function(a, b) {
+            return b.rating - a.rating;
+        });
 
-            var count = 0, sent = false;
+        var sent = false;
 
-            restaurants.forEach(function (restaurant) {
+        if (restaurants.length < 1) {
+            res.send(responseData);
+        }
 
-                var lat = restaurant.location.coordinate.latitude;
-                var long = restaurant.location.coordinate.longitude;
-                var name = restaurant.name;
+        restaurants.forEach(function(restaurant) {
 
-                request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long + "&keyword=" + name + "&radius=100&type=restaurant&key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk", function (error, response, body) {
+            var lat = restaurant.location.coordinate.latitude;
+            var long = restaurant.location.coordinate.longitude;
+            var name = restaurant.name;
 
-                    count++;
+            request("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long + "&keyword=" + name + "%20" + restaurant.location.postal_code + "&radius=100&type=restaurant&key=AIzaSyDTY9OxJDd4_N2nVaNtdJng-YZcFYgmpEE", function(error, response, body) {
 
-                    if (!error && response.statusCode === 200) {
-                        var placesResult = JSON.parse(body),
-                            newCount = 0, found = false;
+                if (!error && response.statusCode === 200) {
 
-                        placesResult.results.forEach(function (restaurant) {
+                    const placesResult = JSON.parse(body).results;
+                    let found = false;
 
-                            newCount++;
+                    placesResult.forEach(function(place) {
 
-                            request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk&placeid=" + restaurant.place_id, function (error, response, body2) {
+                        var same = restaurant.name.includes(place.name) || place.name.includes(restaurant.name);
 
-                                if (!error && response.statusCode === 200) {
+                        if (same) {
 
-                                    var data2 = JSON.parse(body2).result,
-                                        openingHours = data2.opening_hours;
+                            request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk&placeid=" + place.place_id, function(error2, response2, body2) {
+
+                                if (!error2 && response2.statusCode === 200) {
+
+                                    var placeResult = JSON.parse(body2).result,
+                                        openingHours = placeResult.opening_hours;
 
                                     if (openingHours && openingHours.periods[day] && parseInt(openingHours.periods[day].open.time) <= time && parseInt(openingHours.periods[day].close.time) >= time && !found) {
                                         found = true;
-                                        restaurantsRecommended.push(data2);
+                                        restaurantsRecommended.push(placeResult);
                                     }
                                 }
 
@@ -80,15 +85,14 @@ app.post('/recommendations/', function (req, res) {
                                     responseData.restaurantsRecommended = restaurantsRecommended;
                                     res.send(responseData);
                                 }
-
                             });
-                        });
-                    }
-                });
+                        }
+                    });
+                }
             });
-        })
-        .catch(function (err) {
-            responseData.error = err;
-            res.send(responseData);
         });
+    }).catch(function(err) {
+        responseData.error = err;
+        res.send(responseData);
+    });
 });
