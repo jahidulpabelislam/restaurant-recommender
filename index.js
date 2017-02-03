@@ -103,6 +103,22 @@ app.post('/recommendations/', function (req, res) {
                                 if (restaurantsRecommended.length === 5 && !sent) {
                                     sent = true;
                                     responseData.restaurantsRecommended = restaurantsRecommended;
+                                    responseData.restaurantsRecommended.sort(function(a, b) {
+
+                                        if (b.rating < a.rating) {
+                                            return -1;
+                                        } else if (b.rating > a.rating) {
+                                            return 1;
+                                        } else {
+                                            if (b.review_count < a.review_count) {
+                                                return -1;
+                                            } else if (b.review_count > a.review_count) {
+                                                return 1;
+                                            } else {
+                                                return 0;
+                                            }
+                                        }
+                                    });
                                     res.send(responseData);
                                 }
                             });
