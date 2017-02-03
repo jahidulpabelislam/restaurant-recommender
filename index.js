@@ -39,7 +39,20 @@ app.post('/recommendations/', function (req, res) {
         var restaurants = data.businesses;
 
         restaurants.sort(function(a, b) {
-            return b.rating - a.rating;
+
+            if (b.rating < a.rating) {
+                return -1;
+            } else if (b.rating > a.rating) {
+                return 1;
+            } else {
+                if (b.review_count < a.review_count) {
+                    return -1;
+                } else if (b.review_count > a.review_count) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
         });
 
         var sent = false;
