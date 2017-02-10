@@ -10,9 +10,9 @@
     <div class="jumbotron">
 
         <form id="preferences">
-
-            <input type="text" class="form-control" name="fname" id="pCode" placeholder="Post Code">
-            <label class="checkbox-inline">Food Type:</label>
+            <label for="pCode">Postcode</label>
+            <input type="text" class="form-control" name="fname" id="pCode" placeholder="PO1 1DS">
+            <label>Food Type You Like:</label>
             <label class="checkbox-inline"><input type="checkbox" name="myCheck" value="afghani">Afghani</label>
             <label class="checkbox-inline"><input type="checkbox" name="myCheck" value="newamerican">American</label>
             <label class="checkbox-inline"><input type="checkbox" name="myCheck" value="arabian">Arabian</label>
@@ -32,6 +32,7 @@
             <label class="checkbox-inline"><input type="checkbox" name="myCheck" value="mexican">Mexican</label>
             <label class="checkbox-inline"><input type="checkbox" name="myCheck" value="chinese">Chinese</label>
 
+            <label for="day" style="display: block;">The Day You Want To Eat</label>
             <select id="day" class="form-control input-lg">
                 <option value="Monday">Monday</option>
                 <option value="Tuesday">Tuesday</option>
@@ -42,6 +43,7 @@
                 <option value="Sunday">Sunday</option>
             </select>
 
+            <label for="time">The Time You Want To Eat</label>
             <select id="time" class="form-control input-lg">
                 <option value="0900">09:00</option>
                 <option value="0930">09:30</option>
@@ -76,6 +78,7 @@
                 <option value="0000">00:00</option>
             </select>
 
+            <label for="day">Maximum Distance Willing To Travel</label>
             <select id="distance" class="form-control input-lg">
                 <option value="1">1KM</option>
                 <option value="2">2KM</option>
