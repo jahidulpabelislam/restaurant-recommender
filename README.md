@@ -6,15 +6,19 @@ We decided to create a restaurant recommender web app for those having trouble c
 
 Users can use inputs to choose their preferences and then submit to receive recommendation based on their preferences.
 
-#### The inputs:
+**The inputs:**
 
-* Postcode
-* Food Category (Mexican, French etc.)
-* What day to eat.
-* What time to eat.
-* What distance willing to travel
+*   Postcode
 
-The system will then output the top 5 restaurants for user’s preferences ranked on the rating on Yelp.
+*   Food Category (Mexican, French etc.)
+
+*   What day to eat.
+
+*   What time to eat.
+
+*   What distance willing to travel
+
+The system will then output the top 5 restaurants for user's preferences ranked on the rating on Yelp.
 
 We decided to use these filters because these we believe are the most important factors when choosing a place to eat, and as there isn't a system which takes in all this information when recommending.
 
