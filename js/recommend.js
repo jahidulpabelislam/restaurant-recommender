@@ -36,8 +36,8 @@ document.getElementById("preferences").onsubmit = function() {
 
             recommendation.innerHTML = "";
 
-            if (data && data.restaurantsRecommended && data.restaurantsRecommended.length > 0) {
-                data.restaurantsRecommended.forEach(function(restaurant) {
+            if (data && data.recommendedRestaurants && data.recommendedRestaurants.length > 0) {
+                data.recommendedRestaurants.forEach(function(restaurant) {
                     var div = document.createElement("div");
                     var div2 = document.createElement("div");
                     var div3 = document.createElement("div");
@@ -85,10 +85,10 @@ document.getElementById("preferences").onsubmit = function() {
                 });
             }
             else if (data && data.error) {
-                recommendation.innerHTML = "<p>Error getting your Recommendations, please try again later.</p>";
+                recommendation.innerHTML = "<p>Error getting your recommendations, please try again later.</p>";
             }
             else {
-                recommendation.innerHTML = "<p>No Recommendations found for your preferences.</p>";
+                recommendation.innerHTML = "<p>No recommendations found for your preferences.</p>";
             }
         }
     };
