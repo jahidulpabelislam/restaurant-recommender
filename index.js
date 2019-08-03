@@ -4,14 +4,9 @@ const express = require("express"),
     request = require("request"),
     bodyParser = require("body-parser"),
 
-    Yelp = require("yelp"),
+    Yelp = require("yelp-fusion"),
 
-    yelp = new Yelp({
-        consumer_key: "NYLIYvAuI7kb917AbxGG7g",
-        consumer_secret: "Fvm2IdcYp3S0pD19Vducgu9Pabs",
-        token: "PpEfquG1t7T8OzuNkS3Bt46jQGkxt5yh",
-        token_secret: "DIWO2SozLgCfb2vdBIaiuvTF23I",
-    });
+    yelp = Yelp.client("Rbcpq-glFZ-SWli6Ac2daTjuc1rOoIRMVn4JbvsDNdB8bi-cr7QRQjoqJ9GIlhmp-z-wd21TYv-qkuTIusncQLBhYef2wTZ1TtBQGyrJ3LmEZ5ciqwJCdPs3p49FXXYx");
 
 require("http").Server(app).listen(9000);
 
@@ -53,7 +48,7 @@ app.post("/recommendations/", function(req, res) {
     yelp.search(yelpParams).then(function(data) {
         const restaurantsRecommended = [];
 
-        const restaurants = data.businesses;
+        const restaurants = data.jsonBody.businesses;
 
         restaurants.sort(function(a, b) {
             if (b.rating < a.rating) {
@@ -79,12 +74,13 @@ app.post("/recommendations/", function(req, res) {
         }
 
         restaurants.forEach(function(restaurant) {
-            const lat = restaurant.location.coordinate.latitude;
-            const long = restaurant.location.coordinate.longitude;
             const name = restaurant.name;
 
+            const lat = restaurant.coordinates.latitude;
+            const long = restaurant.coordinates.longitude;
+
             const mapsReqURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + long +
-                               "&keyword=" + name + "%20" + restaurant.location.postal_code +
+                               "&keyword=" + name + "%20" + restaurant.location.zip_code +
                                "&radius=100&type=restaurant&key=AIzaSyDTY9OxJDd4_N2nVaNtdJng-YZcFYgmpEE";
 
             request(mapsReqURL, function(error, response, body) {
@@ -98,11 +94,9 @@ app.post("/recommendations/", function(req, res) {
                             const same = restaurant.name.includes(place.name) || place.name.includes(restaurant.name);
 
                             if (same) {
-
                                 request("https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCdKWpGk2NqT_Mdx0L7oudzR8mdLQ0KTYk&placeid=" + place.place_id, function(error2, response2, body2) {
 
                                         if (!error2 && response2.statusCode === 200) {
-
                                             const placeResult = JSON.parse(body2).result,
                                                 openingHours = placeResult.opening_hours;
 

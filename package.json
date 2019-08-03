@@ -21,6 +21,7 @@
         "body-parser": "^1.19.0",
         "express": "^4.17.1",
         "request": "^2.88.0",
-        "yelp": "^1.0.2"
+        "yelp": "^1.0.2",
+        "yelp-fusion": "^3.0.0"
     }
 }
