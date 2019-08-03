@@ -1,7 +1,7 @@
-document.getElementById('preferences').onsubmit = function () {
+document.getElementById("preferences").onsubmit = function() {
 
     //// Food Type
-    var foodType = document.getElementsByName('myCheck');
+    var foodType = document.getElementsByName("myCheck");
     var chosenType = [];
     var typeCount = 0;
 
@@ -13,10 +13,10 @@ document.getElementById('preferences').onsubmit = function () {
     }
 
     //// Post code
-    var pCode = document.getElementById('pCode').value;
-    var dist = document.getElementById('distance').value;
-    var time = document.getElementById('time').value;
-    var day = document.getElementById('day').value;
+    var pCode = document.getElementById("pCode").value;
+    var dist = document.getElementById("distance").value;
+    var time = document.getElementById("time").value;
+    var day = document.getElementById("day").value;
 
     var preferences = {"postcode": pCode, "food": chosenType, "distance": dist, "time": time, "day": day};
     var preferencesJSON = JSON.stringify(preferences);
@@ -29,7 +29,7 @@ document.getElementById('preferences').onsubmit = function () {
     http.setRequestHeader("Content-type", "application/json");
 
     //Call a function when the state changes.
-    http.onreadystatechange = function () {
+    http.onreadystatechange = function() {
         if (http.readyState === 4 && http.status === 200) {
             const data = JSON.parse(http.responseText),
                 recommendation = document.getElementById("recommendation");
@@ -37,7 +37,7 @@ document.getElementById('preferences').onsubmit = function () {
             recommendation.innerHTML = "";
 
             if (data && data.restaurantsRecommended && data.restaurantsRecommended.length > 0) {
-                data.restaurantsRecommended.forEach(function (restaurant) {
+                data.restaurantsRecommended.forEach(function(restaurant) {
                     var div = document.createElement("div");
                     var div2 = document.createElement("div");
                     var div3 = document.createElement("div");
@@ -83,9 +83,11 @@ document.getElementById('preferences').onsubmit = function () {
 
                     recommendation.appendChild(div);
                 });
-            } else if (data && data.error) {
+            }
+            else if (data && data.error) {
                 recommendation.innerHTML = "<p>Error getting your Recommendations, please try again later.</p>";
-            } else {
+            }
+            else {
                 recommendation.innerHTML = "<p>No Recommendations found for your preferences.</p>";
             }
         }
